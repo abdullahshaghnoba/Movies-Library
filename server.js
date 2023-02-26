@@ -4,52 +4,152 @@ const express = require('express');
 
 const cors = require('cors');
 
+const axios = require('axios');
 
-const data = require('./movie-data/data.json')
+const data = require('./movie-data/data.json');
+
+require('dotenv').config();
 
 const server = express();
 
 server.use(cors());
 
+
 const PORT = 3500;
 
-function Movies (title,poster_path,overview){
-    this.title=title,
-    this.poster_path=poster_path,
-    this.overview=overview
+function Movies(id, title, release_date, poster_path, overview) {
+    this.id = id,
+        this.title = title,
+        this.release_date = release_date,
+        this.poster_path = poster_path,
+        this.overview = overview
 }
 
-let newMovie = new Movies(data.title,data.poster_path,data.overview)
+let newMovie = new Movies(data.id, data.title, data.release_date, data.poster_path, data.overview)
 
-
+let APIKye = process.env.APIKye;
 // Routs 
 ///////////////////////// Home Route ////////////
-server.get('/',(req,res)=>{
-   
-    res.send(newMovie)
-
-})
+server.get('/', homeRoutHandler);
 ///////////////////////// Favorite Route ////////////
-server.get('/Favorite',(req,res) =>{
-    let message = "Welcome to Favorite Page"
-    res.status(200).send(message)
-})
-
-
-
+server.get('/Favorite', favoriteRoutHandler)
+////////////////////////// Trending Rout ///////////////////////
+server.get('/trending', trendingHandler);
+///////////////////////////  search Rout  ////////////////////////////////
+server.get('/search', searchRoutHandler);
+/////////////////////////// network Rout   /////////////////////////////////////////
+server.get('/network', networkRoutHandler);
+////////////////////////// People Rout /////////////////////////////////////////////
+server.get('/people',peopleRoutHandler);
 ///////////////////////// page not found Route ////////////
-server.get('*',(req,res)=>{
+server.get('*', pageNotFoundHandler);
+///////////////////////////// error 500 Rout ///////////////////
+server.use(errorHandler);
+////////////////////////////////// Handlers ////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////// Home Rout Handler //////////
+function homeRoutHandler(req, res) {
+    res.send(newMovie);
+}
+//////////////////////// Favorite Rout Handler //////////
+function favoriteRoutHandler(req, res) {
+    let message = "Welcome to Favorite Page"
+    res.status(200).send(message);
+}
+/////////////// Trending Rout Handler ////////////
+function trendingHandler(req, res) {
+    try {
+        const trendingURL = `https://api.themoviedb.org/3/trending/all/week?api_key=${APIKye}&language=en-US`
+
+        axios.get(trendingURL)
+            .then((trendingAxiosResult) => {
+
+                let maptrendingRes = trendingAxiosResult.data.results.map((element) => {
+                    let newMovieTrending = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview);
+                    return newMovieTrending
+                })
+                res.send(maptrendingRes);
+            })
+            .catch((error) => {
+                res.status(500).send(error);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+
+}
+///////////////////////////  search Rout Handler ////////////////////////////////
+function searchRoutHandler(req, res) {
+    try {
+        const searchURL = `https://api.themoviedb.org/3/search/movie?api_key=${APIKye}&language=en-US&query=The&page=2`
+
+        axios.get(searchURL)
+            .then((searchAxiosResult) => {
+
+                let mapsearchRes = searchAxiosResult.data.results.map((element) => {
+                    let newMoviesearch = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview);
+                    return newMoviesearch
+                })
+                res.send(mapsearchRes);
+            })
+            .catch((error) => {
+                res.status(500).send(error);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+
+}
+///////////////////////////// network Rout Handler /////////////////////////////////////
+function networkRoutHandler(req, res) {
+    try {
+        const networkURL = `https://api.themoviedb.org/3/network/3?api_key=${APIKye}`
+
+        axios.get(networkURL)
+            .then((networkAxiosResult) => {
+                res.send(networkAxiosResult.data);
+            })
+            .catch((error) => {
+                res.status(500).send(error);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+
+}
+///////////////////////////////// People Rout Handler /////////////////////////////////
+function peopleRoutHandler(req, res) {
+    try {
+        const peopleURL = `https://api.themoviedb.org/3/person/5?api_key=${APIKye}&language=en-US`
+
+        axios.get(peopleURL)
+            .then((peopleAxiosResult) => {
+                res.send(peopleAxiosResult.data);
+            })
+            .catch((error) => {
+                res.status(500).send(error);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+
+}
+//////////////////////// middleware function error Handler //////////////////////
+function errorHandler(error, req, res) {
+    const err = {
+        status: 500,
+        massage: error
+    }
+    res.status(500).send(err);
+}
+/////////////////////////////////// Page Not Found Handler /////////////////////////////////
+function pageNotFoundHandler(req, res) {
     res.status(404).send("page not found");
-})
-
-///////////////////////// something went wrong Route ////////////
-server.get('*',(req,res)=>{
-    res.status(500).send("Sorry, something went wrong");
-})
-
-
-
+}
 // http://localhost:3500
-server.listen(PORT,() =>{
-    console.log(`Hi ${PORT}` )
+server.listen(PORT, () => {
+    console.log(`Hi ${PORT}`)
 })
