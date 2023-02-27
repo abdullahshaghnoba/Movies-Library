@@ -1,9 +1,11 @@
 # Movies-Library - 1.0.0
 **Abdullah Shaghnoba**
 ### WRRC image is for home page and fav. page 
-### WRRC2 image is for the other pages 
+### WRRC2 image is for the project features (3-6) 
+### WRRC3 image is for the project features (7,8)
 ![WRRC](./assets/Untitled%20(3).png)
 ![WRRC2](./assets/WRRC%202final.png)
+![WRRC3](./assets/WRRC%203.png)
 ## Over view : This is an application that gives a list of movies and some detailes about them
 ## Getting Started :
 1. ### Initialize your project: on ubuntu
@@ -15,5 +17,7 @@
 2. ### search fav. page
 3. ### search page
 4. ### search trending page
-5. 
-6. 
+5. ### network page
+6. ### people page
+7. ### get a movie from data base
+8. ### edit movies in the data base
