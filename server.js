@@ -8,6 +8,8 @@ const axios = require('axios');
 
 const data = require('./movie-data/data.json');
 
+const pg = require('pg');
+
 require('dotenv').config();
 
 const server = express();
@@ -16,6 +18,8 @@ server.use(cors());
 
 
 const PORT = 3500;
+
+const client = new pg.Client(process.env.DATABASE_URL);
 
 function Movies(id, title, release_date, poster_path, overview) {
     this.id = id,
@@ -28,6 +32,8 @@ function Movies(id, title, release_date, poster_path, overview) {
 let newMovie = new Movies(data.id, data.title, data.release_date, data.poster_path, data.overview)
 
 let APIKye = process.env.APIKye;
+//////////////////////////// parse the post output ///////////////////////
+server.use(express.json());
 // Routs 
 ///////////////////////// Home Route ////////////
 server.get('/', homeRoutHandler);
@@ -40,11 +46,16 @@ server.get('/search', searchRoutHandler);
 /////////////////////////// network Rout   /////////////////////////////////////////
 server.get('/network', networkRoutHandler);
 ////////////////////////// People Rout /////////////////////////////////////////////
-server.get('/people',peopleRoutHandler);
+server.get('/people', peopleRoutHandler);
+////////////////////////// favmovie get  Rout /////////////////////////
+server.get('/getMovies', getMoviesHandler);
+//////////////////////////// favmovie post  Rout ////////////////////////////
+server.post('/getMovie', postMoviesHandler);
 ///////////////////////// page not found Route ////////////
 server.get('*', pageNotFoundHandler);
 ///////////////////////////// error 500 Rout ///////////////////
 server.use(errorHandler);
+
 ////////////////////////////////// Handlers ////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// Home Rout Handler //////////
 function homeRoutHandler(req, res) {
@@ -137,6 +148,30 @@ function peopleRoutHandler(req, res) {
     }
 
 }
+///////////////////////////////// Get Movies Rout Handler ///////////////////////////////
+function getMoviesHandler(req, res) {
+    const sql = `SELECT * FROM favmovie`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
+}
+////////////////////////////// post Movies Rout Handler //////////////////////////////////////
+function postMoviesHandler(req, res) {
+    const movie = req.body;
+    const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path,overview)
+    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}' ); `
+client.query(sql)
+.then((data)=>{
+    res.send("added successfully");
+})
+.catch((err)=>{
+    errorHandler(err,req,res);
+})
+}
 //////////////////////// middleware function error Handler //////////////////////
 function errorHandler(error, req, res) {
     const err = {
@@ -150,6 +185,9 @@ function pageNotFoundHandler(req, res) {
     res.status(404).send("page not found");
 }
 // http://localhost:3500
-server.listen(PORT, () => {
-    console.log(`Hi ${PORT}`)
-})
+client.connect()
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`Hi ${PORT}`)
+        });
+    })
