@@ -55,6 +55,8 @@ server.post('/getMovie', postMoviesHandler);
 server.put('/getMovie/:id',putMoviesHandler);
 /////////////////////////// favmovie delete Rout //////////////////////////
 server.delete('/getmovie/:id',deleteMoviesHandler);
+///////////////////////// favmovie get by id Rout ////////////////////////
+server.get('/getmovie/:id',getMoviesByIdHandler);
 ///////////////////////// page not found Route ////////////
 server.get('*', pageNotFoundHandler);
 ///////////////////////////// error 500 Rout ///////////////////
@@ -196,7 +198,7 @@ function putMoviesHandler(req,res){
 function deleteMoviesHandler(req,res){
     const update = req.body;
     const id = req.params.id;
-    let sql = `DELETE FROM favmovie WHERE id=${id}`;
+    let sql = `DELETE FROM favmovie WHERE id=${id} RETURNING *`;
     client.query(sql)
     .then((data)=>{
         res.status(204).send({});
@@ -205,6 +207,18 @@ function deleteMoviesHandler(req,res){
     .catch((err)=>{
         errorHandler(err,req,res);
     })
+}
+//////////////////////// get Movies By Id Handler /////////////////////////////////////////////
+function getMoviesByIdHandler(req, res) {
+    const id = req.params.id;
+    const sql = `SELECT * FROM favmovie WHERE id=${id}`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
 }
 //////////////////////// middleware function error Handler //////////////////////
 function errorHandler(error, req, res) {
