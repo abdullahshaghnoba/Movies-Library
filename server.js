@@ -51,6 +51,10 @@ server.get('/people', peopleRoutHandler);
 server.get('/getMovies', getMoviesHandler);
 //////////////////////////// favmovie post  Rout ////////////////////////////
 server.post('/getMovie', postMoviesHandler);
+/////////////////////////// favmovie put Rout /////////////////////////////
+server.put('/getMovie/:id',putMoviesHandler);
+/////////////////////////// favmovie delete Rout //////////////////////////
+server.delete('/getmovie/:id',deleteMoviesHandler);
 ///////////////////////// page not found Route ////////////
 server.get('*', pageNotFoundHandler);
 ///////////////////////////// error 500 Rout ///////////////////
@@ -172,6 +176,36 @@ client.query(sql)
     errorHandler(err,req,res);
 })
 }
+///////////////////////////// put Movies Handler /////////////////////////////////////////////
+function putMoviesHandler(req,res){
+    const update = req.body;
+    const id = req.params.id;
+    const sql = `UPDATE favmovie SET movieTitle=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id='${id}' RETURNING *`;
+    const values = [update.movieTitle,update.release_date,update.poster_path,update.overview];
+    client.query(sql,values)
+    .then((data)=>{
+        console.log(data.rows);
+        res.status(200).send(data.rows);
+    })
+    .catch((err)=>{
+        errorHandler(err,req,res);
+    })
+
+}
+///////////////////////// delete Movies Handler ///////////////////////////////////
+function deleteMoviesHandler(req,res){
+    const update = req.body;
+    const id = req.params.id;
+    let sql = `DELETE FROM favmovie WHERE id=${id}`;
+    client.query(sql)
+    .then((data)=>{
+        res.status(204).send({});
+
+    })
+    .catch((err)=>{
+        errorHandler(err,req,res);
+    })
+}
 //////////////////////// middleware function error Handler //////////////////////
 function errorHandler(error, req, res) {
     const err = {
@@ -190,4 +224,7 @@ client.connect()
         server.listen(PORT, () => {
             console.log(`Hi ${PORT}`)
         });
+    })
+    .catch((err)=>{
+        errorHandler(err,req,res);
     })
