@@ -17,7 +17,7 @@ const server = express();
 server.use(cors());
 
 
-const PORT = 3500;
+const PORT = process.env.PORT || 3500;
 
 const client = new pg.Client(process.env.DATABASE_URL);
 
