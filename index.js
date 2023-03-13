@@ -168,8 +168,8 @@ function getMoviesHandler(req, res) {
 ////////////////////////////// post Movies Rout Handler //////////////////////////////////////
 function postMoviesHandler(req, res) {
     const movie = req.body;
-    const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path,overview)
-    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}' ); `
+    const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path,overview,comment)
+    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}' ); `
 client.query(sql)
 .then((data)=>{
     res.send("added successfully");
