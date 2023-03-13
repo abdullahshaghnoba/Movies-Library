@@ -50,7 +50,7 @@ server.get('/people', peopleRoutHandler);
 ////////////////////////// favmovie get  Rout /////////////////////////
 server.get('/getMovies', getMoviesHandler);
 //////////////////////////// favmovie post  Rout ////////////////////////////
-server.post('/addMovie', postMoviesHandler);
+server.post('/getMovie', postMoviesHandler);
 /////////////////////////// favmovie put Rout /////////////////////////////
 server.put('/getMovie/:id', putMoviesHandler);
 /////////////////////////// favmovie delete Rout //////////////////////////
@@ -169,7 +169,8 @@ function getMoviesHandler(req, res) {
 function postMoviesHandler(req, res) {
     const movie = req.body;
     const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path, overview, comment)
-    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}') RETURNING *;`
+    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}') ;`
+
     client.query(sql)
         .then((data) => {
             res.send("added successfully");
