@@ -169,7 +169,7 @@ function getMoviesHandler(req, res) {
 function postMoviesHandler(req, res) {
     const movie = req.body;
     const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path, overview, comment)
-    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}' RETURNING * ); `
+    VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}') RETURNING *;`
     client.query(sql)
         .then((data) => {
             res.send("added successfully");
