@@ -50,7 +50,7 @@ server.get('/people', peopleRoutHandler);
 ////////////////////////// favmovie get  Rout /////////////////////////
 server.get('/getMovies', getMoviesHandler);
 //////////////////////////// favmovie post  Rout ////////////////////////////
-server.post('/getMovie', postMoviesHandler);
+server.post('/addMovie', postMoviesHandler);
 /////////////////////////// favmovie put Rout /////////////////////////////
 server.put('/getMovie/:id', putMoviesHandler);
 /////////////////////////// favmovie delete Rout //////////////////////////
