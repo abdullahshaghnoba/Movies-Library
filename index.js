@@ -52,11 +52,11 @@ server.get('/getMovies', getMoviesHandler);
 //////////////////////////// favmovie post  Rout ////////////////////////////
 server.post('/getMovie', postMoviesHandler);
 /////////////////////////// favmovie put Rout /////////////////////////////
-server.put('/getMovie/:id',putMoviesHandler);
+server.put('/getMovie/:id', putMoviesHandler);
 /////////////////////////// favmovie delete Rout //////////////////////////
-server.delete('/getmovie/:id',deleteMoviesHandler);
+server.delete('/getmovie/:id', deleteMoviesHandler);
 ///////////////////////// favmovie get by id Rout ////////////////////////
-server.get('/getmovie/:id',getMoviesByIdHandler);
+server.get('/getmovie/:id', getMoviesByIdHandler);
 ///////////////////////// page not found Route ////////////
 server.get('*', pageNotFoundHandler);
 ///////////////////////////// error 500 Rout ///////////////////
@@ -168,45 +168,45 @@ function getMoviesHandler(req, res) {
 ////////////////////////////// post Movies Rout Handler //////////////////////////////////////
 function postMoviesHandler(req, res) {
     const movie = req.body;
-    const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path,overview,comment)
+    const sql = `INSERT INTO favmovie (movieTitle, release_date, poster_path, overview, comment)
     VALUES('${movie.movieTitle}','${movie.release_date}' ,'${movie.poster_path}' ,'${movie.overview}','${movie.comment}' RETURNING * ); `
-client.query(sql)
-.then((data)=>{
-    res.send("added successfully");
-})
-.catch((err)=>{
-    errorHandler(err,req,res);
-})
+    client.query(sql)
+        .then((data) => {
+            res.send("added successfully");
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
 }
 ///////////////////////////// put Movies Handler /////////////////////////////////////////////
-function putMoviesHandler(req,res){
+function putMoviesHandler(req, res) {
     const update = req.body;
     const id = req.params.id;
     const sql = `UPDATE favmovie SET movieTitle=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id='${id}' RETURNING *`;
-    const values = [update.movieTitle,update.release_date,update.poster_path,update.overview];
-    client.query(sql,values)
-    .then((data)=>{
-        console.log(data.rows);
-        res.status(200).send(data.rows);
-    })
-    .catch((err)=>{
-        errorHandler(err,req,res);
-    })
+    const values = [update.movieTitle, update.release_date, update.poster_path, update.overview];
+    client.query(sql, values)
+        .then((data) => {
+            console.log(data.rows);
+            res.status(200).send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
 
 }
 ///////////////////////// delete Movies Handler ///////////////////////////////////
-function deleteMoviesHandler(req,res){
+function deleteMoviesHandler(req, res) {
     const update = req.body;
     const id = req.params.id;
     let sql = `DELETE FROM favmovie WHERE id=${id} RETURNING *`;
     client.query(sql)
-    .then((data)=>{
-        res.status(204).send({});
+        .then((data) => {
+            res.status(204).send({});
 
-    })
-    .catch((err)=>{
-        errorHandler(err,req,res);
-    })
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
 }
 //////////////////////// get Movies By Id Handler /////////////////////////////////////////////
 function getMoviesByIdHandler(req, res) {
@@ -239,6 +239,6 @@ client.connect()
             console.log(`Hi ${PORT}`)
         });
     })
-    .catch((err)=>{
-        errorHandler(err,req,res);
+    .catch((err) => {
+        errorHandler(err, req, res);
     })
