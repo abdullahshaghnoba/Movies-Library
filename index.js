@@ -23,7 +23,7 @@ const client = new pg.Client(process.env.DATABASE_URL);
 
 function Movies(id, title, release_date, poster_path, overview, name) {
     this.id = id,
-        this.title = title || name ,
+        this.title = title || name,
         this.release_date = release_date,
         this.poster_path = poster_path,
         this.overview = overview
@@ -81,7 +81,7 @@ function trendingHandler(req, res) {
             .then((trendingAxiosResult) => {
 
                 let maptrendingRes = trendingAxiosResult.data.results.map((element) => {
-                    let newMovieTrending = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview,element.name);
+                    let newMovieTrending = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview, element.name);
                     return newMovieTrending
                 })
                 res.send(maptrendingRes);
@@ -104,7 +104,7 @@ function searchRoutHandler(req, res) {
             .then((searchAxiosResult) => {
 
                 let mapsearchRes = searchAxiosResult.data.results.map((element) => {
-                    let newMoviesearch = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview,element.name);
+                    let newMoviesearch = new Movies(element.id, element.title, element.release_date, element.poster_path, element.overview, element.name);
                     return newMoviesearch
                 })
                 res.send(mapsearchRes);
@@ -184,11 +184,17 @@ function putMoviesHandler(req, res) {
     const update = req.body;
     const id = req.params.id;
     const sql = `UPDATE favmovie SET comment=$1 WHERE id='${id}' RETURNING *`;
-    const values = [ update.comment];
+    const values = [update.comment];
     client.query(sql, values)
         .then((data) => {
-            console.log(data.rows);
-            res.status(200).send(data.rows);
+            const sql = `SELECT * FROM favmovie`;
+            client.query(sql)
+                .then((data) => {
+                    res.send(data.rows);
+                })
+                .catch((err) => {
+                    errorHandler(err, req, res);
+                })
         })
         .catch((err) => {
             errorHandler(err, req, res);
