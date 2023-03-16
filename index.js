@@ -207,10 +207,16 @@ function deleteMoviesHandler(req, res) {
     const id = req.params.id;
     let sql = `DELETE FROM favmovie WHERE id=${id} RETURNING *`;
     client.query(sql)
-        .then((data) => {
-            res.status(204).send({});
-
-        })
+    .then((data) => {
+        const sql = `SELECT * FROM favmovie`;
+        client.query(sql)
+            .then((data) => {
+                res.send(data.rows);
+            })
+            .catch((err) => {
+                errorHandler(err, req, res);
+            })
+    })
         .catch((err) => {
             errorHandler(err, req, res);
         })
