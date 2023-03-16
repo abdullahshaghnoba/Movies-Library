@@ -183,8 +183,8 @@ function postMoviesHandler(req, res) {
 function putMoviesHandler(req, res) {
     const update = req.body;
     const id = req.params.id;
-    const sql = `UPDATE favmovie SET movieTitle=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id='${id}' RETURNING *`;
-    const values = [update.movieTitle, update.release_date, update.poster_path, update.overview];
+    const sql = `UPDATE favmovie SET comment=$1 WHERE id='${id}' RETURNING *`;
+    const values = [ update.comment];
     client.query(sql, values)
         .then((data) => {
             console.log(data.rows);
